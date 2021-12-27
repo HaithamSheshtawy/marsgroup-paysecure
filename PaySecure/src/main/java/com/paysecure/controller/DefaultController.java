@@ -33,8 +33,7 @@ public class DefaultController {
 		try {
 			account = Account.create(params);
 
-			return new ResponseEntity<>(ObjMapper.getInstance().writeValueAsString(account),
-					HttpStatus.OK);
+			return new ResponseEntity<>(ObjMapper.getInstance().writeValueAsString(account), HttpStatus.OK);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -44,6 +43,31 @@ public class DefaultController {
 		}
 		return null;
 
+	}
+
+	@GetMapping("/account/full")
+	public ResponseEntity<Object> createAccountWiithParameters(@RequestHeader HttpHeaders httpHeaders) {
+
+		Stripe.apiKey = "sk_test_51K8LpZHAyPAsNJoGVmyFQPooYJ8CchkMcBvDnkCZelv6ZUyGbAo7xinqZGP3vsrHncEZO3MpSV9CdNp8ufPs08U100qnOAzIfy";
+		AccountCreateParams params = AccountCreateParams.builder().setCountry("US")
+				.setType(AccountCreateParams.Type.EXPRESS)
+				.setCapabilities(AccountCreateParams.Capabilities.builder()
+						.setCardPayments(
+								AccountCreateParams.Capabilities.CardPayments.builder().setRequested(true).build())
+						.setTransfers(AccountCreateParams.Capabilities.Transfers.builder().setRequested(true).build())
+						.build())
+				.setBusinessType(AccountCreateParams.BusinessType.INDIVIDUAL)
+				.setBusinessProfile(AccountCreateParams.BusinessProfile.builder().setUrl("https://example.com").build())
+				.build();
+
+		try {
+			Account account = Account.create(params);
+			return new ResponseEntity<>(ObjMapper.getInstance().writeValueAsString(account), HttpStatus.OK);
+		} catch (StripeException | JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
